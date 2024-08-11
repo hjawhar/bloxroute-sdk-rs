@@ -19,7 +19,6 @@ Before using the bloXroute Rust SDK, make sure you have the following prerequisi
     - [X] bdnBlocks
     - [ ] transactionStatus
     - [ ] txReceipts
-    - [ ] txReceipts
 
 ## Implementation:
 <p>Example using Tokio can be found: <a href="https://github.com/hjawhar/bloxroute-sdk-rs/tree/master/examples/tokio">here</a>
