@@ -6,7 +6,7 @@ version = "1.0.0"
 edition = "2021"
 rust-version = "1.80"
 repository = "https://github.com/hjawhar/bloxroute-sdk-rs"
-license = "The Unlicense"
+license = "Unlicense"
 readme = "README.md"
 
 [dependencies]
