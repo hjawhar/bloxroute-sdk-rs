@@ -7,10 +7,10 @@
     - [X] pendingTxs
     - [X] newBlocks
     - [X] bdnBlocks
-    - [] transactionStatus
-    - [] txReceipts
-    - [] txReceipts
+    - [ ] transactionStatus
+    - [ ] txReceipts
+    - [ ] txReceipts
 
-
-<h3>Implementation:<h3>
-An example using Tokio can be found ![here](https://github.com/hjawhar/bloxroute-sdk-rs/tree/master/examples/tokio)
+<h3>Implementation:</h3>
+<p>Example using Tokio can be found: <a href="https://github.com/hjawhar/bloxroute-sdk-rs/tree/master/examples/tokio">here</a>
+</p>
