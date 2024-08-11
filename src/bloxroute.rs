@@ -24,11 +24,12 @@ use crate::models::{
     BloxrouteGeneric, BloxrouteRequestParams, BloxrouteRequestPayload, BloxrouteResponseEnum,
 };
 
+#[derive(Clone, Debug)]
 pub struct BloxrouteClient {
     pub write: Arc<Mutex<SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>>>,
     pub read: Arc<Mutex<SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>>>,
-    pub tx: Sender<BloxrouteResponseEnum>,
-    pub rx: Receiver<BloxrouteResponseEnum>,
+    pub tx: Arc<Mutex<Sender<BloxrouteResponseEnum>>>,
+    pub rx: Arc<Mutex<Receiver<BloxrouteResponseEnum>>>,
 }
 
 impl BloxrouteClient {
@@ -46,8 +47,8 @@ impl BloxrouteClient {
                 let client = Self {
                     write: Arc::new(Mutex::new(write)),
                     read: Arc::new(Mutex::new(read)),
-                    tx,
-                    rx,
+                    tx: Arc::new(Mutex::new(tx)),
+                    rx: Arc::new(Mutex::new(rx)),
                 };
                 BloxrouteClient::init(&client).await;
                 return client;
@@ -163,7 +164,7 @@ impl BloxrouteClient {
         tokio::spawn(async move {
             let read = read_clone.clone();
             let mut lock_guard = read.lock().await;
-            let tx = tx_clone.clone();
+            let tx = tx_clone.lock().await;
             while let Some(data) = lock_guard.next().await {
                 let text = &data.unwrap().to_string();
                 if let Ok(res) = serde_json::from_str::<BloxrouteSubscription>(text) {

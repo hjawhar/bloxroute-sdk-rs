@@ -1,3 +1,5 @@
+use std::{thread, time::Duration};
+
 use bloxroute_sdk::{
     bloxroute::BloxrouteClient,
     models::{
@@ -16,6 +18,19 @@ async fn main() {
     let mut client = BloxrouteClient::connect(&ws_endpoint, &ws_auth_header, timeout).await;
 
     let mut thread_handles: Vec<JoinHandle<()>> = vec![];
+    let client_receiver_clone = client.clone();
+    thread_handles.push(tokio::spawn(async move {
+        let receiver_clone = client_receiver_clone.rx.clone();
+        let mut receiver = receiver_clone.lock().await;
+        while let Some(data) = receiver.recv().await {
+            match &data {
+                BloxrouteResponseEnum::Transaction(_) => println!("New tx"),
+                BloxrouteResponseEnum::Subscription(sub) => println!("{:#?}", sub),
+                BloxrouteResponseEnum::Block(_) => println!("New block"),
+            }
+        }
+    }));
+
     {
         let params = BloxrouteTransactionRequestInclude {
             include: Some(
@@ -52,6 +67,7 @@ async fn main() {
     }
 
     {
+        thread::sleep(Duration::from_millis(5000));
         let params = BloxrouteBlockRequestInclude {
             include: Some(
                 vec![
@@ -71,16 +87,6 @@ async fn main() {
             .subscribe_to_new_blocks("newBlocksId".to_string(), params)
             .await;
     }
-
-    thread_handles.push(tokio::spawn(async move {
-        while let Some(data) = client.rx.recv().await {
-            match &data {
-                BloxrouteResponseEnum::Transaction(tx) => println!("{:#?}", tx),
-                BloxrouteResponseEnum::Subscription(sub) => println!("{:#?}", sub),
-                BloxrouteResponseEnum::Block(block) => println!("{:#?}", block),
-            }
-        }
-    }));
 
     let _join_rs = join_all(thread_handles).await;
 }

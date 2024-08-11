@@ -2,7 +2,7 @@
 name = "bloxroute-sdk"
 description = "Bloxroute SDK that allows developers to interact with the bloXroute Cloud API and Gateway."
 keywords = ["bloxroute", "bdn", "ethereum", "blockchain"]
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 rust-version = "1.80"
 repository = "https://github.com/hjawhar/bloxroute-sdk-rs"
