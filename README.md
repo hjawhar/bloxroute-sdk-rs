@@ -1,5 +1,8 @@
 # Bloxroute Rust SDK
 
+[![Crates.io](https://img.shields.io/crates/v/bloxroute-sdk)](https://crates.io/crates/bloxroute-sdk)
+[![Documentation](https://docs.rs/bloxroute-sdk/badge.svg)](https://docs.rs/bloxroute-sdk)
+
 ## Prerequisites
 
 Before using the bloXroute Rust SDK, make sure you have the following prerequisites:
