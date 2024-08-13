@@ -181,3 +181,78 @@ pub struct TraderV2SubmitSignedTransactionBatchTxResponse {
 pub struct TraderV2SubmitSignedTransactionBatchResponse {
     pub transactions: Vec<TraderV2SubmitSignedTransactionBatchTxResponse>,
 }
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct BloxrouteRaydiumStreamReserveResponse {
+    pub token1Reserves: String,
+    pub token1Address: String,
+    pub token2Reserves: String,
+    pub token2Address: String,
+    pub poolAddress: String,
+    pub project: String,
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct BloxrouteRaydiumStreamReservesResponse {
+    pub slot: String,
+    pub reserves: BloxrouteRaydiumStreamReserveResponse,
+    pub timestamp: String,
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct BloxrouteRaydiumStreamSwapsPayload {
+    pub pools: Vec<String>,
+    pub includeFailed: Option<bool>,
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct BloxrouteRaydiumStreamSwapResponse {
+    pub success: bool,
+    pub project: String,
+    pub poolAddress: String,
+    pub inToken: String,
+    pub inTokenAddress: String,
+    pub outToken: String,
+    pub outTokenAddress: String,
+    pub inAmount: f64,
+    pub outAmountMin: f64,
+    pub sourceAccount: String,
+    pub destinationAccount: String,
+    pub ownerAccount: String,
+    pub signature: String,
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct BloxrouteRaydiumStreamSwapsResponse {
+    pub slot: String,
+    pub swap: BloxrouteRaydiumStreamSwapResponse,
+    pub timestamp: String,
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct BloxrouteRaydiumNewRaydiumPoolResponse {
+    pub pool: String,
+    pub poolAddress: String,
+    pub token1Reserves: String,
+    pub token1MintAddress: String,
+    pub token1MintSymbol: String,
+    pub token2Reserves: String,
+    pub token2MintAddress: String,
+    pub token2MintSymbol: String,
+    pub openTime: String,
+    pub poolType: String,
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct BloxrouteRaydiumNewRaydiumPoolsResponse {
+    pub slot: String,
+    pub pool: BloxrouteRaydiumNewRaydiumPoolResponse,
+    pub timestamp: String,
+}

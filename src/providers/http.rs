@@ -1,11 +1,18 @@
 use serde_json::json;
 use std::error::Error;
 
-use crate::models::raydium::{
-    CreateRouteSwapPayload, CreateRouteSwapResponse, CreateSwapTransactionPayload,
-    CreateSwapTransactionResponse, RaydiumPool, RaydiumPools, RaydiumQuote,
-    TraderV2SubmitSignedTransactionBatchPayload, TraderV2SubmitSignedTransactionBatchResponse,
-    TraderV2SubmitSignedTransactionPayload, TraderV2SubmitSignedTransactionResponse,
+use crate::models::{
+    raydium::{
+        CreateRouteSwapPayload, CreateRouteSwapResponse, CreateSwapTransactionPayload,
+        CreateSwapTransactionResponse, RaydiumPool, RaydiumPools, RaydiumQuote,
+        TraderV2SubmitSignedTransactionBatchPayload, TraderV2SubmitSignedTransactionBatchResponse,
+        TraderV2SubmitSignedTransactionPayload, TraderV2SubmitSignedTransactionResponse,
+    },
+    solana::{
+        BloxrouteGetAccountBalance, BloxrouteGetAccountBalanceResponse,
+        BloxrouteGetRateLimitResponse, BloxrouteGetStreamPriorityFee,
+        BloxrouteGetTransactionStatusResponse,
+    },
 };
 
 #[derive(Clone, Debug)]
@@ -125,6 +132,88 @@ impl BloxrouteHttpClient {
 
         let response = resp.text().await.unwrap();
         let response_json: CreateRouteSwapResponse = serde_json::from_str(response.as_str())?;
+        Ok(response_json)
+    }
+
+    // General
+    pub async fn get_account_balance(
+        &self,
+        owner_address: String,
+    ) -> Result<Vec<BloxrouteGetAccountBalance>, Box<dyn Error + Send + Sync>> {
+        let _endpoint = &self.endpoint;
+        let endpoint = format!("{_endpoint}/api/v2/balance?ownerAddress={owner_address}");
+        let resp = self
+            .client
+            .clone()
+            .get(endpoint)
+            .header("Authorization", self.auth_header.clone())
+            .send()
+            .await?;
+        let response = resp.text().await?;
+        let response_json: BloxrouteGetAccountBalanceResponse =
+            serde_json::from_str(response.as_str())?;
+        Ok(response_json.tokens)
+    }
+
+    pub async fn get_rate_limit(
+        &self,
+    ) -> Result<BloxrouteGetRateLimitResponse, Box<dyn Error + Send + Sync>> {
+        let _endpoint = &self.endpoint;
+        let endpoint = format!("{_endpoint}/api/v2/rate-limit");
+        let resp = self
+            .client
+            .clone()
+            .get(endpoint)
+            .header("Authorization", self.auth_header.clone())
+            .send()
+            .await?;
+        let response = resp.text().await?;
+        let response_json: BloxrouteGetRateLimitResponse = serde_json::from_str(response.as_str())?;
+        Ok(response_json)
+    }
+
+    pub async fn get_recent_priority_fee(
+        &self,
+        project: String,
+        percentile: Option<f64>,
+    ) -> Result<BloxrouteGetStreamPriorityFee, Box<dyn Error + Send + Sync>> {
+        let _endpoint = &self.endpoint;
+        let endpoint = format!(
+            "{_endpoint}/api/v2/system/priority-fee?project={project}{}",
+            if percentile.is_some() {
+                format!("&{}", percentile.unwrap())
+            } else {
+                "".to_string()
+            }
+        );
+        let resp = self
+            .client
+            .clone()
+            .get(endpoint)
+            .header("Authorization", self.auth_header.clone())
+            .send()
+            .await?;
+        let response = resp.text().await?;
+        let response_json: BloxrouteGetStreamPriorityFee = serde_json::from_str(response.as_str())?;
+        Ok(response_json)
+    }
+
+    pub async fn get_transaction_status(
+        &self,
+        signature: String,
+    ) -> Result<BloxrouteGetTransactionStatusResponse, Box<dyn Error + Send + Sync>> {
+        let _endpoint = &self.endpoint;
+        let endpoint = format!("{_endpoint}/api/v2/transaction?signature={signature}");
+        let resp = self
+            .client
+            .clone()
+            .get(endpoint)
+            .header("Authorization", self.auth_header.clone())
+            .send()
+            .await?;
+        let response = resp.text().await?;
+        let response_json: BloxrouteGetTransactionStatusResponse =
+            serde_json::from_str(response.as_str())?;
         Ok(response_json)
     }
 

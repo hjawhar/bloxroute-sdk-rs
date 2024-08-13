@@ -11,6 +11,7 @@ use openbook::{
     BloxrouteOpenbookGetDepthResponse, BloxrouteOpenbookGetMarketsResponse,
     BloxrouteOpenbookGetOrderbookResponse, BloxrouteOpenbookGetTickersResponse,
 };
+use raydium::{BloxrouteRaydiumNewRaydiumPoolsResponse, BloxrouteRaydiumStreamReservesResponse, BloxrouteRaydiumStreamSwapsResponse};
 use serde::{Deserialize, Serialize};
 use solana::{BloxrouteGetBundleTipStreamResponse, BloxrouteGetStreamPriorityFee};
 use subscription::BloxrouteSubscription;
@@ -42,6 +43,9 @@ pub enum BloxrouteResponseEnum {
     Block(BloxrouteGeneric<BloxrouteBlock>),
     GetStreamPriorityFee(BloxrouteGeneric<BloxrouteGetStreamPriorityFee>),
     GetBundleTipStream(BloxrouteGeneric<BloxrouteGetBundleTipStreamResponse>),
+    RaydiumStreamReservesResponse(BloxrouteGeneric<BloxrouteRaydiumStreamReservesResponse>),
+    RaydiumStreamSwapsResponse(BloxrouteGeneric<BloxrouteRaydiumStreamSwapsResponse>),
+    RaydiumNewRaydiumPoolsResponse(BloxrouteGeneric<BloxrouteRaydiumNewRaydiumPoolsResponse>),
     OpenbookGetMarkets(BloxrouteGenericSolana<BloxrouteOpenbookGetMarketsResponse>),
     OpenbookGetOrderbookResponse(BloxrouteGenericSolana<BloxrouteOpenbookGetOrderbookResponse>),
     OpenbookGetDepth(BloxrouteGenericSolana<BloxrouteOpenbookGetDepthResponse>),

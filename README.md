@@ -1,4 +1,4 @@
-# Bloxroute Rust SDK
+# bloXroute Rust SDK
 
 [![Crates.io](https://img.shields.io/crates/v/bloxroute-sdk)](https://crates.io/crates/bloxroute-sdk)
 [![Documentation](https://docs.rs/bloxroute-sdk/badge.svg)](https://docs.rs/bloxroute-sdk)
@@ -26,10 +26,10 @@ Before using the bloXroute Rust SDK, make sure you have the following prerequisi
 - Solana
     - Trader API v2
         - General 
-            - [ ] Get Account Balance
-            - [ ] Get Rate Limit
-            - [ ] Get Transaction Status
-            - [ ] Get Recent Priority Fee
+            - [X] Get Account Balance
+            - [X] Get Rate Limit
+            - [X] Get Transaction Status
+            - [X] Get Recent Priority Fee
             - [X] Stream Priority Fee
             - [X] Stream Bundle Tip
             - [X] Submit Signed Transaction
@@ -58,9 +58,9 @@ Before using the bloXroute Rust SDK, make sure you have the following prerequisi
             - [X] Get Pool Reserves
             - [X] Create Swap Transaction
             - [X] Create Route Swap
-            - [ ] Stream Pool Reserves
-            - [ ] Stream Swaps
-            - [ ] Stream New Raydium Pools
+            - [X] Stream Pool Reserves
+            - [X] Stream Swaps
+            - [X] Stream New Raydium Pools
         - Zeta Markets
             - [ ] Stream Zeta Transactions
             - [ ] Create Zero Cross Margin Account

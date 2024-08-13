@@ -22,6 +22,10 @@ use crate::models::{
         BloxrouteOpenbookGetDepthResponse, BloxrouteOpenbookGetMarketsResponse,
         BloxrouteOpenbookGetOrderbookResponse, BloxrouteOpenbookGetTickersResponse,
     },
+    raydium::{
+        BloxrouteRaydiumNewRaydiumPoolsResponse, BloxrouteRaydiumStreamReservesResponse,
+        BloxrouteRaydiumStreamSwapsPayload, BloxrouteRaydiumStreamSwapsResponse,
+    },
     solana::{BloxrouteGetBundleTipStreamResponse, BloxrouteGetStreamPriorityFee},
     subscription::BloxrouteSubscription,
     transaction::{
@@ -218,7 +222,7 @@ impl BloxrouteWsClient {
         return send_message(self.write.clone(), req_payload).await;
     }
 
-    pub async fn subscribe_stream_priority_fee(
+    pub async fn subscribe_to_stream_priority_fee(
         &mut self,
         id: String,
         project: String,
@@ -242,7 +246,69 @@ impl BloxrouteWsClient {
         return send_message(self.write.clone(), req_payload).await;
     }
 
-    pub async fn subscribe_stream_bundle_tip(
+    pub async fn subscribe_to_stream_pool_reserves(
+        &mut self,
+        id: String,
+        pools: Vec<String>,
+    ) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let mut hashmap: HashMap<String, Vec<String>> = HashMap::new();
+        hashmap.insert("pools".to_string(), pools);
+
+        let req_payload = BloxrouteRequestPayload {
+            id,
+            jsonrpc: "2.0".to_string(),
+            method: "subscribe".to_string(),
+            params: BloxrouteRequestParams::Array(vec![
+                BloxrouteRequestParams::String("GetPoolReservesStream".to_string()),
+                BloxrouteRequestParams::Object(hashmap),
+            ]),
+        };
+
+        return send_message(self.write.clone(), req_payload).await;
+    }
+
+    pub async fn subscribe_to_stream_swaps(
+        &mut self,
+        id: String,
+        payload: BloxrouteRaydiumStreamSwapsPayload,
+    ) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let req_payload = BloxrouteRequestPayload {
+            id,
+            jsonrpc: "2.0".to_string(),
+            method: "subscribe".to_string(),
+            params: BloxrouteRequestParams::Array(vec![
+                BloxrouteRequestParams::String("GetSwapsStream".to_string()),
+                BloxrouteRequestParams::Object(payload),
+            ]),
+        };
+
+        return send_message(self.write.clone(), req_payload).await;
+    }
+
+    pub async fn subscribe_to_new_raydium_pools(
+        &mut self,
+        id: String,
+        include_cpmm: Option<bool>,
+    ) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let mut hashmap: HashMap<String, bool> = HashMap::new();
+        if let Some(include_cpmm) = include_cpmm {
+            hashmap.insert("includeCPMM".to_string(), include_cpmm);
+        }
+
+        let req_payload = BloxrouteRequestPayload {
+            id,
+            jsonrpc: "2.0".to_string(),
+            method: "subscribe".to_string(),
+            params: BloxrouteRequestParams::Array(vec![
+                BloxrouteRequestParams::String("GetNewRaydiumPoolsStream".to_string()),
+                BloxrouteRequestParams::Object(hashmap),
+            ]),
+        };
+
+        return send_message(self.write.clone(), req_payload).await;
+    }
+
+    pub async fn subscribe_to_stream_bundle_tip(
         &mut self,
         id: String,
     ) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -319,6 +385,27 @@ impl BloxrouteWsClient {
                     {
                         let _ = tx
                             .send(BloxrouteResponseEnum::OpenbookGetTickers(res))
+                            .await;
+                    } else if let Ok(res) = serde_json::from_str::<
+                        BloxrouteGeneric<BloxrouteRaydiumStreamReservesResponse>,
+                    >(text)
+                    {
+                        let _ = tx
+                            .send(BloxrouteResponseEnum::RaydiumStreamReservesResponse(res))
+                            .await;
+                    } else if let Ok(res) = serde_json::from_str::<
+                        BloxrouteGeneric<BloxrouteRaydiumStreamSwapsResponse>,
+                    >(text)
+                    {
+                        let _ = tx
+                            .send(BloxrouteResponseEnum::RaydiumStreamSwapsResponse(res))
+                            .await;
+                    } else if let Ok(res) = serde_json::from_str::<
+                        BloxrouteGeneric<BloxrouteRaydiumNewRaydiumPoolsResponse>,
+                    >(text)
+                    {
+                        let _ = tx
+                            .send(BloxrouteResponseEnum::RaydiumNewRaydiumPoolsResponse(res))
                             .await;
                     } else {
                         println!("{:#?}", text);

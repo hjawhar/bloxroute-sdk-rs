@@ -34,6 +34,11 @@ async fn main() {
                 BloxrouteResponseEnum::OpenbookGetDepth(x) => println!("{:#?}", x),
                 BloxrouteResponseEnum::GetBundleTipStream(x) => println!("{:#?}", x),
                 BloxrouteResponseEnum::GetStreamPriorityFee(x) => println!("{:#?}", x),
+                BloxrouteResponseEnum::RaydiumStreamReservesResponse(x) => println!("{:#?}", x),
+                BloxrouteResponseEnum::RaydiumStreamSwapsResponse(x) => println!("{:#?}", x),
+                BloxrouteResponseEnum::RaydiumNewRaydiumPoolsResponse(x) => {
+                    println!("{:#?}", x)
+                }
             }
         }
     }));

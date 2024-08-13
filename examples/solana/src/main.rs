@@ -1,8 +1,8 @@
 use bloxroute_sdk::{
     models::{
         raydium::{
-            CreateRouteSwapPayload, CreateSwapTransactionPayload, RaydiumQuoteStepProject,
-            RaydiumRouteStep,
+            BloxrouteRaydiumStreamSwapsPayload, CreateRouteSwapPayload,
+            CreateSwapTransactionPayload, RaydiumQuoteStepProject, RaydiumRouteStep,
         },
         BloxrouteResponseEnum,
     },
@@ -37,6 +37,11 @@ async fn main() {
                     BloxrouteResponseEnum::OpenbookGetDepth(x) => println!("{:#?}", x),
                     BloxrouteResponseEnum::GetBundleTipStream(x) => println!("{:#?}", x),
                     BloxrouteResponseEnum::GetStreamPriorityFee(x) => println!("{:#?}", x),
+                    BloxrouteResponseEnum::RaydiumStreamReservesResponse(x) => println!("{:#?}", x),
+                    BloxrouteResponseEnum::RaydiumStreamSwapsResponse(x) => println!("{:#?}", x),
+                    BloxrouteResponseEnum::RaydiumNewRaydiumPoolsResponse(x) => {
+                        println!("{:#?}", x)
+                    }
                 }
             }
         }));
@@ -73,7 +78,7 @@ async fn main() {
 
         {
             let _ = client
-                .subscribe_stream_priority_fee(
+                .subscribe_to_stream_priority_fee(
                     "streamPriorityFeeId".to_string(),
                     "P_RAYDIUM".to_string(),
                     Some(55.0),
@@ -83,7 +88,32 @@ async fn main() {
 
         {
             let _ = client
-                .subscribe_stream_bundle_tip("streamBundleTipId".to_string())
+                .subscribe_to_stream_bundle_tip("streamBundleTipId".to_string())
+                .await;
+        }
+
+        {
+            let _ = client
+                .subscribe_to_stream_pool_reserves(
+                    "poolReservesStreamId".to_string(),
+                    vec!["58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2".to_string()],
+                )
+                .await;
+        }
+
+        {
+            let payload = BloxrouteRaydiumStreamSwapsPayload {
+                pools: vec!["58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2".to_string()],
+                includeFailed: None,
+            };
+            let _ = client
+                .subscribe_to_stream_swaps("streamSwapsId".to_string(), payload)
+                .await;
+        }
+
+        {
+            let _ = client
+                .subscribe_to_new_raydium_pools("newRaydiumPoolsId".to_string(), Some(true))
                 .await;
         }
     }
@@ -152,6 +182,39 @@ async fn main() {
             };
 
             let response = client.create_raydium_route_swap(payload).await;
+            println!("{:#?}", response);
+        }
+
+        {
+            let response = client
+                .get_account_balance("2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9".to_string())
+                .await;
+            println!("{:#?}", response);
+        }
+
+        {
+            let response = client.get_rate_limit().await;
+            println!("{:#?}", response);
+        }
+
+        {
+            let response = client
+                .get_recent_priority_fee("P_JUPITER".to_string(), Some(50.0))
+                .await;
+            println!("{:#?}", response);
+        }
+
+        {
+            let response = client
+                .get_transaction_status("4SXEENfvjCRgUcAbYNK8KwKchTtSB1b9xnfQCZJKnDAsxhhPicp4HQ4DBpYGUa4oq7AgWywTL3yxcPRkCHniT9jY".to_string() )
+                .await;
+            println!("{:#?}", response);
+        }
+
+        {
+            let response = client
+                .get_transaction_status("4SXEENfvjCRgUcAbYNK8KwKchTtSB1b9xnfQCZJKnDAsxhhPicp4HQ4DBpYGUa4oq7AgWywTL3yxcPRkCHniT9j1".to_string() )
+                .await;
             println!("{:#?}", response);
         }
     }
