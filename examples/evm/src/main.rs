@@ -1,21 +1,22 @@
 use std::{thread, time::Duration};
 
 use bloxroute_sdk::{
-    bloxroute::BloxrouteClient,
     models::{
         transaction::{BloxrouteBlockRequestInclude, BloxrouteTransactionRequestInclude},
         BloxrouteResponseEnum,
     },
+    providers::ws::BloxrouteWsClient,
 };
 use futures_util::future::join_all;
 use tokio::task::JoinHandle;
 
 #[tokio::main]
 async fn main() {
-    let ws_endpoint = std::env::var("ws_endpoint").unwrap();
-    let ws_auth_header = std::env::var("ws_auth_header").unwrap();
+    let endpoint = std::env::var("endpoint").unwrap();
+    let auth_header = std::env::var("auth_header").unwrap();
     let timeout = 5000;
-    let mut client = BloxrouteClient::connect(&ws_endpoint, &ws_auth_header, timeout).await;
+    let mut client =
+        BloxrouteWsClient::connect(endpoint.to_string(), auth_header.to_string(), timeout).await;
 
     let mut thread_handles: Vec<JoinHandle<()>> = vec![];
     let client_receiver_clone = client.clone();
@@ -27,6 +28,12 @@ async fn main() {
                 BloxrouteResponseEnum::Transaction(_) => println!("New tx"),
                 BloxrouteResponseEnum::Subscription(sub) => println!("{:#?}", sub),
                 BloxrouteResponseEnum::Block(_) => println!("New block"),
+                BloxrouteResponseEnum::OpenbookGetMarkets(x) => println!("{:#?}", x),
+                BloxrouteResponseEnum::OpenbookGetTickers(x) => println!("{:#?}", x),
+                BloxrouteResponseEnum::OpenbookGetOrderbookResponse(x) => println!("{:#?}", x),
+                BloxrouteResponseEnum::OpenbookGetDepth(x) => println!("{:#?}", x),
+                BloxrouteResponseEnum::GetBundleTipStream(x) => println!("{:#?}", x),
+                BloxrouteResponseEnum::GetStreamPriorityFee(x) => println!("{:#?}", x),
             }
         }
     }));

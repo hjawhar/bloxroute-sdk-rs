@@ -22,7 +22,7 @@ pub struct BloxrouteTransactionContents {
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct BloxrouteTransaction {
-    pub txHash: Option<String>,
+    pub txHash: String,
     pub txContents: Option<BloxrouteTransactionContents>,
     pub localRegion: Option<bool>,
     pub rawTx: Option<String>,

@@ -1,2 +1,2 @@
-pub mod bloxroute;
+pub mod providers;
 pub mod models;

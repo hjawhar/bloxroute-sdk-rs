@@ -1,9 +1,18 @@
 pub mod block;
+pub mod openbook;
+pub mod raydium;
+pub mod solana;
 pub mod subscription;
 pub mod transaction;
+use std::collections::HashMap;
 
 use block::BloxrouteBlock;
+use openbook::{
+    BloxrouteOpenbookGetDepthResponse, BloxrouteOpenbookGetMarketsResponse,
+    BloxrouteOpenbookGetOrderbookResponse, BloxrouteOpenbookGetTickersResponse,
+};
 use serde::{Deserialize, Serialize};
+use solana::{BloxrouteGetBundleTipStreamResponse, BloxrouteGetStreamPriorityFee};
 use subscription::BloxrouteSubscription;
 use transaction::BloxrouteTransaction;
 
@@ -21,10 +30,22 @@ pub struct BloxrouteGeneric<T> {
 }
 
 #[derive(Deserialize, Debug, Clone)]
+pub struct BloxrouteGenericSolana<T> {
+    pub id: String,
+    pub result: T,
+}
+
+#[derive(Deserialize, Debug, Clone)]
 pub enum BloxrouteResponseEnum {
     Subscription(BloxrouteSubscription),
     Transaction(BloxrouteGeneric<BloxrouteTransaction>),
     Block(BloxrouteGeneric<BloxrouteBlock>),
+    GetStreamPriorityFee(BloxrouteGeneric<BloxrouteGetStreamPriorityFee>),
+    GetBundleTipStream(BloxrouteGeneric<BloxrouteGetBundleTipStreamResponse>),
+    OpenbookGetMarkets(BloxrouteGenericSolana<BloxrouteOpenbookGetMarketsResponse>),
+    OpenbookGetOrderbookResponse(BloxrouteGenericSolana<BloxrouteOpenbookGetOrderbookResponse>),
+    OpenbookGetDepth(BloxrouteGenericSolana<BloxrouteOpenbookGetDepthResponse>),
+    OpenbookGetTickers(BloxrouteGenericSolana<BloxrouteOpenbookGetTickersResponse>),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -34,6 +55,7 @@ pub enum BloxrouteRequestParams<T> {
     Object(T),
     Array(Vec<T>),
     Boolean(T),
+    Hashmap(HashMap<String, T>),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -41,5 +63,5 @@ pub struct BloxrouteRequestPayload<T> {
     pub id: String,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<BloxrouteRequestParams<T>>,
+    pub params: BloxrouteRequestParams<T>,
 }
